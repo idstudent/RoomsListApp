@@ -1,4 +1,4 @@
-package com.example.hotellistapp.Adapter
+package com.example.hotellistapp.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

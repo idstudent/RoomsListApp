@@ -1,11 +1,11 @@
-package com.example.hotellistapp
+package com.example.hotellistapp.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.example.hotellistapp.R
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -21,7 +21,6 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun setContentView(layoutResID: Int) {
-        Log.e("tag", "id "+ layoutResID)
         if(layoutResID != R.layout.activity_main) {
             layout = LayoutInflater.from(this).inflate(R.layout.activity_base, null) as CoordinatorLayout
             layoutContainer = layout.findViewById(R.id.layout_container) as FrameLayout

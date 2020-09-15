@@ -1,13 +1,12 @@
-package com.example.hotellistapp
+package com.example.hotellistapp.ui.activity
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.viewpager.widget.ViewPager
-import com.example.hotellistapp.Adapter.FragmentAdapter
+import com.example.hotellistapp.R
+import com.example.hotellistapp.adapter.FragmentAdapter
 import com.example.hotellistapp.ui.fragmnet.LikeRoomsFragment
 import com.example.hotellistapp.ui.fragmnet.RoomsFragment
 import kotlinx.android.synthetic.main.activity_base.*
@@ -17,7 +16,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.e("tag", "main "+ R.layout.activity_main)
+
         roomsViewPager()
     }
     private fun roomsViewPager()  {
