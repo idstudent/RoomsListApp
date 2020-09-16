@@ -8,9 +8,10 @@ import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
 import com.example.hotellistapp.model.ProductInfos
 import com.example.hotellistapp.util.setOnSingleClickListener
+import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_rooms_detail_activity.*
 
-class RoomsDetailActivity : AppCompatActivity() {
+class RoomsDetailActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +20,8 @@ class RoomsDetailActivity : AppCompatActivity() {
         init()
     }
     private fun init() {
+        main_tablayout.visibility = View.GONE
+
         var check = false
         if(intent.hasExtra("item")) {
             val item = intent.getSerializableExtra("item") as ProductInfos

@@ -6,17 +6,21 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.example.hotellistapp.R
+import com.example.hotellistapp.db.DBManager
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseActivity : AppCompatActivity() {
     private lateinit var layout: CoordinatorLayout
     private lateinit var layoutContainer: FrameLayout
+    private lateinit var dbManager: DBManager
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
+
+        dbManager = DBManager.getInstance(this) ?: return
     }
 
     override fun setContentView(layoutResID: Int) {

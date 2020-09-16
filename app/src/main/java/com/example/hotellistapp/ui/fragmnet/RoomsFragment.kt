@@ -21,7 +21,7 @@ import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Response
 
-class RoomsFragment : Fragment() {
+class RoomsFragment : BaseFragment() {
     private lateinit var compositeDisposable: CompositeDisposable
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =inflater.inflate(R.layout.fragment_rooms, container, false)
