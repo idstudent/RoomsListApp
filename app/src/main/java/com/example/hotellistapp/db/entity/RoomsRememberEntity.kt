@@ -12,5 +12,6 @@ data class RoomsRememberEntity (
     val imgPath : String,
     val subject : String,
     val price : Int,
-    val rate : Double
+    val rate : Double,
+    var check: Boolean = false
 )

@@ -16,5 +16,5 @@ abstract class RoomsRememberDAO {
     abstract fun select() : Maybe<List<RoomsRememberEntity>>
 
     @Query("delete from rooms_remember where id in (:id)")
-    abstract fun deleteItem(id : String)
+    abstract fun deleteItem(id : Int)
 }

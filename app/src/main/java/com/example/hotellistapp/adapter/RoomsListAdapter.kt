@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
+import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
 import com.example.hotellistapp.ui.activity.RoomsDetailActivity
 import com.example.hotellistapp.util.setOnSingleClickListener
@@ -23,6 +24,11 @@ class RoomsListAdapter (
     private val listItems : List<ProductInfos>
 ) : RecyclerView.Adapter<RoomsListAdapter.ItemViewHolder>() {
 
+    private lateinit var rememberListener : ItemClickListener
+
+    fun rememberListener(listener : ItemClickListener) {
+        this.rememberListener = listener
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
             LayoutInflater.from(context).inflate(R.layout.item_rooms, parent,false)
@@ -54,11 +60,15 @@ class RoomsListAdapter (
                 item.check = true
                 itemView.btn_remember_off.visibility = View.GONE
                 itemView.btn_remember_on.visibility = View.VISIBLE
+
+                rememberListener.onClick(item)
             }
             itemView.btn_remember_on.setOnSingleClickListener {
                 item.check = false
                 itemView.btn_remember_off.visibility = View.VISIBLE
                 itemView.btn_remember_on.visibility = View.GONE
+
+                rememberListener.onClick(item)
             }
         }
     }

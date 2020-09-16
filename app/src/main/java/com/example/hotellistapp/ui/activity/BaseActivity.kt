@@ -12,9 +12,9 @@ import io.reactivex.disposables.CompositeDisposable
 abstract class BaseActivity : AppCompatActivity() {
     private lateinit var layout: CoordinatorLayout
     private lateinit var layoutContainer: FrameLayout
-    private lateinit var dbManager: DBManager
+    protected lateinit var dbManager: DBManager
 
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

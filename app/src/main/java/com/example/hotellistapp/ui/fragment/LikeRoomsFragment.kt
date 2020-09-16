@@ -1,4 +1,4 @@
-package com.example.hotellistapp.ui.fragmnet
+package com.example.hotellistapp.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

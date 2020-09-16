@@ -23,8 +23,12 @@ class RoomsDetailActivity : BaseActivity() {
         main_tablayout.visibility = View.GONE
 
         var check = false
+        var id = -1
+
         if(intent.hasExtra("item")) {
             val item = intent.getSerializableExtra("item") as ProductInfos
+
+            id = item.id
             title_text.text = item.name
             Glide.with(applicationContext).load(item.imgUrl).into(roomsImg)
             explain_text.text = item.subject
