@@ -9,7 +9,6 @@ import com.example.hotellistapp.R
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseActivity : AppCompatActivity() {
-
     private lateinit var layout: CoordinatorLayout
     private lateinit var layoutContainer: FrameLayout
 

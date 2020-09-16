@@ -13,11 +13,16 @@ import com.example.hotellistapp.adapter.RoomsListAdapter
 import com.example.hotellistapp.api.ApiManager
 import com.example.hotellistapp.api.RoomsResponse
 import com.example.hotellistapp.model.ProductInfos
+import io.reactivex.Scheduler
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Response
 
 class RoomsFragment : Fragment() {
-
+    private lateinit var compositeDisposable: CompositeDisposable
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =inflater.inflate(R.layout.fragment_rooms, container, false)
 
@@ -31,33 +36,55 @@ class RoomsFragment : Fragment() {
     private fun init() {
         var listItems = ArrayList<ProductInfos>()
 
-        for(i in 1..3) {
-            ApiManager.getInstance().getRoomsList("$i.json")
-                .enqueue(object : retrofit2.Callback<RoomsResponse> {
-                    override fun onFailure(call: Call<RoomsResponse>, t: Throwable) {
-                        Log.e("tag", "error " + t)
-                    }
+        compositeDisposable = CompositeDisposable()
 
-                    override fun onResponse(call: Call<RoomsResponse>, response: Response<RoomsResponse>) {
-                        if(response.isSuccessful) {
-                            Log.e("tag", "what11 "+ response.body()?.data?.product?.size)
-                            for(i in 0 until response.body()?.data?.product?.size!!) {
-                                listItems.add(ProductInfos(response.body()?.data?.product?.get(i)?.name!!))
-                            }
-                        }
+        val process = Single.just(1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .flatMap { getOneList() }
+            .doOnSuccess {
+                for(item in it.data.product) {
+                    listItems.add(ProductInfos(item.name, item.image, item.info.imgPath,item.info.subject, item.info.price, item.rate))
+                }
+            }
+            .flatMap { getTwoList() }
+            .doOnSuccess {
+                for(item in it.data.product) {
+                    listItems.add(ProductInfos(item.name, item.image, item.info.imgPath,item.info.subject, item.info.price, item.rate))
+                }
+            }
+            .flatMap { getThreeList() }
+            .doOnSuccess {
+                for(item in it.data.product) {
+                    listItems.add(ProductInfos(item.name, item.image, item.info.imgPath,item.info.subject, item.info.price, item.rate))
+                }
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                val roomsListAdapter = RoomsListAdapter(activity!!, listItems)
 
-                        val roomsListAdapter = RoomsListAdapter(activity!!, listItems)
+                val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
 
-                        val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
-
-                        roomsListAdapter.let {
-                            roomsRecyclerView?.adapter = roomsListAdapter
-                            val layoutManger = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-                            roomsRecyclerView?.layoutManager = layoutManger
-                        }
-                    }
-                })
-        }
-
+                roomsListAdapter.let {
+                    roomsRecyclerView?.adapter = roomsListAdapter
+                    val layoutManger = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+                    roomsRecyclerView?.layoutManager = layoutManger
+                }
+            },{
+            })
+        compositeDisposable.add(process)
+    }
+    private fun getOneList() : Single<RoomsResponse> {
+        return ApiManager.getInstance().getRoomsList("1.json")
+    }
+    private fun getTwoList() : Single<RoomsResponse> {
+        return ApiManager.getInstance().getRoomsList("2.json")
+    }
+    private fun getThreeList() : Single<RoomsResponse> {
+        return ApiManager.getInstance().getRoomsList("3.json")
+    }
+    override fun onDestroy() {
+        compositeDisposable.dispose()
+        super.onDestroy()
     }
 }

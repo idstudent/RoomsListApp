@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
 import com.example.hotellistapp.model.ProductInfos
 import kotlinx.android.synthetic.main.item_rooms.view.*
@@ -33,7 +34,8 @@ class RoomsListAdapter (
                 val item = listItems[position]
 
                 itemView.title.text = item.name
-                itemView.rank_text.text =  position.toString()
+                itemView.rank_text.text = item.rate.toString()
+                Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
             }
         }
     }
