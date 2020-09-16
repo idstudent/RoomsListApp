@@ -12,9 +12,9 @@ import com.example.hotellistapp.R
 import com.example.hotellistapp.adapter.RoomsListAdapter
 import com.example.hotellistapp.api.ApiManager
 import com.example.hotellistapp.api.RoomsResponse
+import com.example.hotellistapp.model.ProductInfos
 import retrofit2.Call
 import retrofit2.Response
-import javax.security.auth.callback.Callback
 
 class RoomsFragment : Fragment() {
 
@@ -29,12 +29,7 @@ class RoomsFragment : Fragment() {
         init()
     }
     private fun init() {
-        var listItems = ArrayList<String>()
-        val roomsListAdapter = RoomsListAdapter(activity!!, listItems)
-
-        for(i in 0..10) {
-            listItems.add(i.toString())
-        }
+        var listItems = ArrayList<ProductInfos>()
 
         for(i in 1..3) {
             ApiManager.getInstance().getRoomsList("$i.json")
@@ -45,26 +40,23 @@ class RoomsFragment : Fragment() {
 
                     override fun onResponse(call: Call<RoomsResponse>, response: Response<RoomsResponse>) {
                         if(response.isSuccessful) {
-                            if(i==3) {
-                                Log.e(
-                                    "tag",
-                                    "success" + response.body()?.data?.product?.get(2)?.name
-                                )
+                            Log.e("tag", "what11 "+ response.body()?.data?.product?.size)
+                            for(i in 0 until response.body()?.data?.product?.size!!) {
+                                listItems.add(ProductInfos(response.body()?.data?.product?.get(i)?.name!!))
                             }
                         }
+
+                        val roomsListAdapter = RoomsListAdapter(activity!!, listItems)
+
+                        val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
+
+                        roomsListAdapter.let {
+                            roomsRecyclerView?.adapter = roomsListAdapter
+                            val layoutManger = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+                            roomsRecyclerView?.layoutManager = layoutManger
+                        }
                     }
-
                 })
-        }
-
-
-
-        val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
-
-        roomsListAdapter.let {
-            roomsRecyclerView?.adapter = roomsListAdapter
-            val layoutManger = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-            roomsRecyclerView?.layoutManager = layoutManger
         }
 
     }
