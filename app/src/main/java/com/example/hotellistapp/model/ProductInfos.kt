@@ -1,6 +1,7 @@
 package com.example.hotellistapp.model
 
 import com.example.hotellistapp.api.RoomsResponse
+import java.io.Serializable
 
 data class ProductInfos(
     var name : String,
@@ -8,5 +9,6 @@ data class ProductInfos(
     var imgUrl : String,
     var subject : String,
     var price : String,
-    var rate : Double
-)
+    var rate : Double,
+    var check: Boolean = false
+): Serializable
