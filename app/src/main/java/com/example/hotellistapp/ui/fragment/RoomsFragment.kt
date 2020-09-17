@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,6 +49,9 @@ class RoomsFragment : BaseFragment() {
         compositeDisposable = CompositeDisposable()
         likeCheck()
 
+        val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
+        progressBar?.visibility = View.VISIBLE
+
         roomsListAdapter = RoomsListAdapter(activity!!, listItems, rememberList, "list")
         roomsListAdapter.notifyDataSetChanged()
 
@@ -75,8 +79,7 @@ class RoomsFragment : BaseFragment() {
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
-
+                progressBar?.visibility = View.GONE
                 val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
 
                 roomsRecyclerView?.adapter = roomsListAdapter
