@@ -1,11 +1,13 @@
 package com.example.hotellistapp.ui.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotellistapp.R
@@ -20,13 +22,17 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.collections.ArrayList
 
 class RoomsFragment : BaseFragment() {
     private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var roomsListAdapter: RoomsListAdapter
     private var listItems = ArrayList<ProductInfos>()
-    private var checkList = ArrayList<ProductInfos>()
+    private var rememberList = ArrayList<ProductInfos>()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =inflater.inflate(R.layout.fragment_rooms, container, false)
 
@@ -35,7 +41,6 @@ class RoomsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-
         init()
 
     }
@@ -43,7 +48,7 @@ class RoomsFragment : BaseFragment() {
         compositeDisposable = CompositeDisposable()
         likeCheck()
 
-        roomsListAdapter = RoomsListAdapter(activity!!, listItems, checkList)
+        roomsListAdapter = RoomsListAdapter(activity!!, listItems, rememberList, "list")
         roomsListAdapter.notifyDataSetChanged()
 
 
@@ -74,13 +79,12 @@ class RoomsFragment : BaseFragment() {
 
                 val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
 
-                roomsListAdapter.let {
-                    roomsRecyclerView?.adapter = roomsListAdapter
-                    val layoutManger = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-                    roomsRecyclerView?.layoutManager = layoutManger
+                roomsRecyclerView?.adapter = roomsListAdapter
+                val layoutManger = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+                roomsRecyclerView?.layoutManager = layoutManger
 
-                    it.rememberListener(rememberListener)
-                }
+                roomsListAdapter.rememberListener(rememberListener)
+
             },{
             })
         compositeDisposable.add(process)
@@ -105,7 +109,11 @@ class RoomsFragment : BaseFragment() {
             }
         }
     }
+
     private fun insertList(item : ProductInfos) {
+        val time = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        var curTime = dateFormat.format(Date(time))
         val insert = Observable.just(
             RoomsRememberEntity(
                 id = item.id,
@@ -115,6 +123,7 @@ class RoomsFragment : BaseFragment() {
                 subject = item.subject,
                 price = item.price,
                 rate = item.rate,
+                time = curTime,
                 check = item.check
             )
         )
@@ -145,18 +154,17 @@ class RoomsFragment : BaseFragment() {
         )
     }
     private fun likeCheck() {
-        checkList.clear()
+        rememberList.clear()
         compositeDisposable.add(
             dbManager.roomsRememberDAO().select()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.e("tag", "it " + it)
                     for (i in it.indices) {
-                        checkList.add(
+                        rememberList.add(
                             ProductInfos(
                                 it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
-                                it[i].subject, it[i].price, it[i].rate, it[i].check
+                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
                             )
                         )
                     }

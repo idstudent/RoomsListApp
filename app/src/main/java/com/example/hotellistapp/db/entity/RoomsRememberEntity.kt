@@ -13,5 +13,6 @@ data class RoomsRememberEntity (
     val subject : String,
     val price : Int,
     val rate : Double,
+    val time : String,
     var check: Boolean = false
 )

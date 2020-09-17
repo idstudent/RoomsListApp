@@ -11,5 +11,6 @@ data class ProductInfos(
     var subject : String,
     var price : Int,
     var rate : Double,
+    var time : String = "",
     var check: Boolean = false
 ): Serializable

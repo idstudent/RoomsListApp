@@ -22,7 +22,8 @@ import kotlinx.android.synthetic.main.item_rooms.view.*
 class RoomsListAdapter (
     private val context : Context,
     private val listItems : List<ProductInfos>,
-    private var checkList : List<ProductInfos>
+    private var rememberList : List<ProductInfos>,
+    private var type : String
 ) : RecyclerView.Adapter<RoomsListAdapter.ItemViewHolder>() {
 
     private lateinit var rememberListener : ItemClickListener
@@ -52,22 +53,40 @@ class RoomsListAdapter (
             itemView.rank_text.text = item.rate.toString()
             Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
 
-            if(checkList.isNotEmpty()) {
-                for(i in listItems.indices) {
-                    for(j in checkList.indices) {
-                        if(listItems[i].id == checkList[j].id){
-                            listItems[i].check = true
+            if(type =="list") {
+                if (rememberList.isNotEmpty()) {
+                    itemView.add_time_title.visibility = View.VISIBLE
+                    itemView.add_time_text.visibility = View.VISIBLE
+
+                    for (i in listItems.indices) {
+                        for (j in rememberList.indices) {
+                            if (listItems[i].id == rememberList[j].id) {
+                                listItems[i].time = rememberList[j].time
+                                listItems[i].check = true
+                            } else {
+                                listItems[i].check = false
+                            }
                         }
                     }
+                } else {
+                    for (i in listItems.indices) {
+                        listItems[i].check = false
+                    }
                 }
-
             }
-            if(item.check){
-                itemView.btn_remember_off.visibility = View.GONE
-                itemView.btn_remember_on.visibility = View.VISIBLE
+            if(type == "remember") {
+                itemView.add_time_title.visibility = View.VISIBLE
+                itemView.add_time_text.visibility = View.VISIBLE
+                itemView.add_time_text.text = item.time
             }else {
-                itemView.btn_remember_off.visibility = View.VISIBLE
-                itemView.btn_remember_on.visibility = View.GONE
+                itemView.add_time_title.visibility = View.GONE
+                itemView.add_time_text.visibility = View.GONE
+            }
+
+            if(item.check){
+                rememberBtnOn(itemView)
+            }else {
+                rememberBtnOff(itemView)
             }
             itemView.setOnSingleClickListener {
                 val intent = Intent(context, RoomsDetailActivity::class.java)
@@ -76,18 +95,25 @@ class RoomsListAdapter (
             }
             itemView.btn_remember_off.setOnSingleClickListener {
                 item.check = true
-                itemView.btn_remember_off.visibility = View.GONE
-                itemView.btn_remember_on.visibility = View.VISIBLE
+                rememberBtnOn(itemView)
 
                 rememberListener.onClick(item)
             }
             itemView.btn_remember_on.setOnSingleClickListener {
                 item.check = false
-                itemView.btn_remember_off.visibility = View.VISIBLE
-                itemView.btn_remember_on.visibility = View.GONE
 
+                rememberBtnOff(itemView)
                 rememberListener.onClick(item)
             }
         }
     }
+    private fun rememberBtnOn(itemView: View) {
+        itemView.btn_remember_off.visibility = View.GONE
+        itemView.btn_remember_on.visibility = View.VISIBLE
+    }
+    private fun rememberBtnOff(itemView: View) {
+        itemView.btn_remember_off.visibility = View.VISIBLE
+        itemView.btn_remember_on.visibility = View.GONE
+    }
+
 }
