@@ -24,6 +24,9 @@ import kotlin.collections.ArrayList
 
 class RoomsFragment : BaseFragment() {
     private lateinit var compositeDisposable: CompositeDisposable
+    private lateinit var roomsListAdapter: RoomsListAdapter
+    private var listItems = ArrayList<ProductInfos>()
+    private var checkList = ArrayList<ProductInfos>()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =inflater.inflate(R.layout.fragment_rooms, container, false)
 
@@ -37,9 +40,12 @@ class RoomsFragment : BaseFragment() {
 
     }
     private fun init() {
-        var listItems = ArrayList<ProductInfos>()
-
         compositeDisposable = CompositeDisposable()
+        likeCheck()
+
+        roomsListAdapter = RoomsListAdapter(activity!!, listItems, checkList)
+        roomsListAdapter.notifyDataSetChanged()
+
 
         val process = Single.just(1)
             .subscribeOn(Schedulers.io())
@@ -64,7 +70,7 @@ class RoomsFragment : BaseFragment() {
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                val roomsListAdapter = RoomsListAdapter(activity!!, listItems)
+
 
                 val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
 
@@ -93,6 +99,7 @@ class RoomsFragment : BaseFragment() {
         override fun onClick(item: ProductInfos) {
             if(item.check){
                 insertList(item)
+
             }else {
                 deleteList(item)
             }
@@ -137,7 +144,28 @@ class RoomsFragment : BaseFragment() {
                 })
         )
     }
+    private fun likeCheck() {
+        checkList.clear()
+        compositeDisposable.add(
+            dbManager.roomsRememberDAO().select()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.e("tag", "it " + it)
+                    for (i in it.indices) {
+                        checkList.add(
+                            ProductInfos(
+                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].subject, it[i].price, it[i].rate, it[i].check
+                            )
+                        )
+                    }
+                    roomsListAdapter.notifyDataSetChanged()
+                }, {
 
+                })
+        )
+    }
     override fun onDestroy() {
         compositeDisposable.dispose()
         super.onDestroy()

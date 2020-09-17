@@ -47,8 +47,9 @@ class MainActivity : BaseActivity() {
 
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 val rememberRecyclerView =  findViewById<RecyclerView>(R.id.remember_list)
-                Log.e("tag", "position "+ position)
                 val listItems = ArrayList<ProductInfos>()
+                val checkList = ArrayList<ProductInfos>()
+
                 compositeDisposable.add(
                     dbManager.roomsRememberDAO().select()
                         .subscribeOn(Schedulers.io())
@@ -62,7 +63,7 @@ class MainActivity : BaseActivity() {
                                     )
                                 )
                             }
-                            roomsListAdapter = RoomsListAdapter(applicationContext, listItems)
+                            roomsListAdapter = RoomsListAdapter(applicationContext, listItems,checkList)
 
                             rememberRecyclerView.adapter = roomsListAdapter
                             rememberRecyclerView.layoutManager = LinearLayoutManager(applicationContext)

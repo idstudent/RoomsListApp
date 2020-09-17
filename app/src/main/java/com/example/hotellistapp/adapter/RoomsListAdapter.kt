@@ -21,7 +21,8 @@ import kotlinx.android.synthetic.main.item_rooms.view.*
 
 class RoomsListAdapter (
     private val context : Context,
-    private val listItems : List<ProductInfos>
+    private val listItems : List<ProductInfos>,
+    private var checkList : List<ProductInfos>
 ) : RecyclerView.Adapter<RoomsListAdapter.ItemViewHolder>() {
 
     private lateinit var rememberListener : ItemClickListener
@@ -51,6 +52,23 @@ class RoomsListAdapter (
             itemView.rank_text.text = item.rate.toString()
             Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
 
+            if(checkList.isNotEmpty()) {
+                for(i in listItems.indices) {
+                    for(j in checkList.indices) {
+                        if(listItems[i].id == checkList[j].id){
+                            listItems[i].check = true
+                        }
+                    }
+                }
+
+            }
+            if(item.check){
+                itemView.btn_remember_off.visibility = View.GONE
+                itemView.btn_remember_on.visibility = View.VISIBLE
+            }else {
+                itemView.btn_remember_off.visibility = View.VISIBLE
+                itemView.btn_remember_on.visibility = View.GONE
+            }
             itemView.setOnSingleClickListener {
                 val intent = Intent(context, RoomsDetailActivity::class.java)
                 intent.putExtra("item", item)
