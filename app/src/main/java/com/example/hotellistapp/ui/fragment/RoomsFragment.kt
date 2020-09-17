@@ -129,6 +129,7 @@ class RoomsFragment : BaseFragment() {
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     Toast.makeText(activity,R.string.delete_text,Toast.LENGTH_SHORT).show()
                 },{
@@ -136,6 +137,7 @@ class RoomsFragment : BaseFragment() {
                 })
         )
     }
+
     override fun onDestroy() {
         compositeDisposable.dispose()
         super.onDestroy()
