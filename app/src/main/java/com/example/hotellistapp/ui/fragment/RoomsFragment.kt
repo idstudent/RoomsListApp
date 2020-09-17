@@ -174,8 +174,4 @@ class RoomsFragment : BaseFragment() {
                 })
         )
     }
-    override fun onDestroy() {
-        compositeDisposable.dispose()
-        super.onDestroy()
-    }
 }
