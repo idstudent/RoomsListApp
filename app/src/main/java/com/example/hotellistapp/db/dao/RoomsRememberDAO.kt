@@ -15,6 +15,15 @@ abstract class RoomsRememberDAO {
     @Query("select * from rooms_remember")
     abstract fun select() : Maybe<List<RoomsRememberEntity>>
 
+    @Query("select * from rooms_remember order by time desc")
+    abstract fun latelyAddSelect() : Maybe<List<RoomsRememberEntity>>
+
+    @Query("select * from rooms_remember order by rate asc")
+    abstract fun rateASC() : Maybe<List<RoomsRememberEntity>>
+
+    @Query("select * from rooms_remember order by rate desc")
+    abstract fun rateDESC() : Maybe<List<RoomsRememberEntity>>
+
     @Query("delete from rooms_remember where id in (:id)")
     abstract fun deleteItem(id : Int)
 }

@@ -5,6 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +25,11 @@ class LikeRoomsFragment : BaseFragment() {
     private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var roomsListAdapter : RoomsListAdapter
     private var listItems = ArrayList<ProductInfos>()
+    private lateinit var spinner : Spinner
+    private lateinit var sortSpinner : ArrayAdapter<CharSequence>
+    private lateinit var rememberRecyclerView : RecyclerView
+    private val checkList = ArrayList<ProductInfos>()
+    private var pos = -1
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_rooms_like, container, false)
@@ -30,18 +38,31 @@ class LikeRoomsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
+        compositeDisposable = CompositeDisposable()
+        rememberRecyclerView = view?.findViewById(R.id.remember_list)!!
+        roomsListAdapter = RoomsListAdapter(activity!!, listItems, checkList, "remember")
+        roomsListAdapter.rememberListener(deleteListener)
+        rememberRecyclerView.adapter = roomsListAdapter
+        rememberRecyclerView.layoutManager = LinearLayoutManager(activity)
+
+        spinner = view?.findViewById(R.id.sort_spinner)!!
+
+        sortSpinner = ArrayAdapter.createFromResource(requireContext(), R.array.sort_array, R.layout.support_simple_spinner_dropdown_item)
+        sortSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = sortSpinner
+
         getRememberList()
+        setSpinner()
     }
     private fun getRememberList() {
-        compositeDisposable = CompositeDisposable()
+        latelyAddSelect()
+    }
+    private fun latelyAddSelect() {
+
         listItems.clear()
 
-        val rememberRecyclerView =  view?.findViewById<RecyclerView>(R.id.remember_list)
-
-        val checkList = ArrayList<ProductInfos>()
-
         compositeDisposable.add(
-            dbManager.roomsRememberDAO().select()
+            dbManager.roomsRememberDAO().latelyAddSelect()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -49,18 +70,57 @@ class LikeRoomsFragment : BaseFragment() {
                         listItems.add(
                             ProductInfos(
                                 it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
-                                it[i].subject, it[i].price, it[i].rate,it[i].time, it[i].check
+                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
                             )
                         )
                     }
-                    roomsListAdapter = RoomsListAdapter(activity!!, listItems,checkList,"remember")
-                    roomsListAdapter.rememberListener(deleteListener)
-                    rememberRecyclerView?.adapter = roomsListAdapter
-                    rememberRecyclerView?.layoutManager = LinearLayoutManager(activity)
+
                     roomsListAdapter.notifyDataSetChanged()
-                },{
+                }, {
 
                 })
+        )
+    }
+    private fun rateASCSelect() {
+        listItems.clear()
+
+        compositeDisposable.add(
+            dbManager.roomsRememberDAO().rateASC()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    for (i in it.indices) {
+                        listItems.add(
+                            ProductInfos(
+                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
+                            )
+                        )
+                    }
+                    roomsListAdapter.notifyDataSetChanged()
+                }, {}
+                )
+        )
+    }
+    private fun rateDESCSelect() {
+        listItems.clear()
+
+        compositeDisposable.add(
+            dbManager.roomsRememberDAO().rateDESC()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    for (i in it.indices) {
+                        listItems.add(
+                            ProductInfos(
+                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
+                            )
+                        )
+                    }
+                    roomsListAdapter.notifyDataSetChanged()
+                }, {}
+                )
         )
     }
     private val deleteListener = object : ItemClickListener {
@@ -86,7 +146,7 @@ class LikeRoomsFragment : BaseFragment() {
     private fun redrawList() {
         listItems.clear()
         compositeDisposable.add(
-            dbManager.roomsRememberDAO().select()
+            dbManager.roomsRememberDAO().latelyAddSelect()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -104,5 +164,22 @@ class LikeRoomsFragment : BaseFragment() {
 
                 })
         )
+    }
+    private fun setSpinner() {
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                pos = position
+
+                if(sortSpinner.getItem(position) == "등록순") {
+                    latelyAddSelect()
+                }else if(sortSpinner.getItem(position) == "평점 높은순"){
+                    rateDESCSelect()
+                }else {
+                    rateASCSelect()
+                }
+            }
+        }
     }
 }
