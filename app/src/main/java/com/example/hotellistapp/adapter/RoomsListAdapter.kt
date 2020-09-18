@@ -63,7 +63,10 @@ class RoomsListAdapter (
                             if (listItems[i].id == rememberList[j].id) {
                                 listItems[i].time = rememberList[j].time
                                 listItems[i].check = true
-                            } 
+                                break
+                            } else {
+                                listItems[i].check = false
+                            }
                         }
                     }
                 } else {
