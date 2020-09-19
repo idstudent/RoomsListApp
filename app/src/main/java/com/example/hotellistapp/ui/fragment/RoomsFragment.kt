@@ -77,7 +77,7 @@ class RoomsFragment : BaseFragment() {
                         pageCheck++
                         Handler(Looper.getMainLooper()).postDelayed({
                             roomsGetList(pageCheck)
-                        }, 2000)
+                        }, 1500)
                     }
                     call = true
                 }
