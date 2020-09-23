@@ -17,7 +17,6 @@ import com.example.hotellistapp.api.ApiManager
 import com.example.hotellistapp.db.entity.RoomsRememberEntity
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
-import com.google.gson.Gson
 import com.google.gson.JsonElement
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,7 +36,7 @@ class RoomsFragment : BaseFragment() {
     private var pageCheck = 1
     private var totalPage = 0
     private var call = false
-    private var progressBar : ProgressBar ?= null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_rooms, container, false)
     }
@@ -53,7 +52,7 @@ class RoomsFragment : BaseFragment() {
         pageCheck = 1
         likeCheck()
 
-        progressBar = view?.findViewById(R.id.progress)
+        val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
         progressBar?.visibility = View.VISIBLE
 
         roomsListAdapter = RoomsListAdapter(requireActivity(), listItems, rememberList, "list")
@@ -106,12 +105,26 @@ class RoomsFragment : BaseFragment() {
                             totalPage = total/20 + 1
                         }
 
-                        for(item in product) {
-                            val test = Gson().fromJson(item, ProductInfos::class.java)
-                            listItems.add(test)
-                        }
+                        // 이방식도되는데 description( jsonobject안에 또 jsonobject있음) 이게 다 null로 찍혀서 쿼리안됨
+//                        for(item in product) {
+//                            val test = Gson().fromJson(item, ProductInfos::class.java)
+//                            listItems.add(test)
+//                        }
+                        product.forEach {
+                            val productObject = it.asJsonObject
+                            val descriptionObject = productObject["description"].asJsonObject
 
-                        progressBar?.visibility = View.GONE
+                            val id = productObject["id"].asInt
+                            val name = productObject["name"].asString
+                            val thumbnail = productObject["thumbnail"].asString
+                            val rate = productObject["rate"].asDouble
+                            val imagePath = descriptionObject["imagePath"].asString
+                            val subject = descriptionObject["subject"].asString
+                            val price = descriptionObject["price"].asInt
+
+                            listItems.add(ProductInfos(id, name, thumbnail, imagePath, subject, price, rate))
+                        }
+                        progress.visibility = View.GONE
                         roomsListAdapter.notifyDataSetChanged()
                     }
                 }
