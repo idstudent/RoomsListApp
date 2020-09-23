@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
+import com.example.hotellistapp.api.RoomsResponse
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
 import com.example.hotellistapp.ui.activity.RoomsDetailActivity
@@ -27,7 +28,13 @@ class RoomsListAdapter (
 ) : RecyclerView.Adapter<RoomsListAdapter.ItemViewHolder>() {
 
     private lateinit var rememberListener : ItemClickListener
+    private var items : ArrayList<List<RoomsResponse.Data.Product>> = ArrayList()
 
+    fun updateItems(items : ArrayList<List<RoomsResponse.Data.Product>>) {
+        this.items = items
+
+        notifyDataSetChanged()
+    }
     fun rememberListener(listener : ItemClickListener) {
         this.rememberListener = listener
     }
@@ -38,7 +45,7 @@ class RoomsListAdapter (
     }
 
     override fun getItemCount(): Int {
-        return listItems.size
+        return items.size
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -47,74 +54,75 @@ class RoomsListAdapter (
     inner class ItemViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         fun bind() {
             val position = adapterPosition
-            val item = listItems[position]
+            val item = items[position]
 
-            itemView.title.text = item.name
-            itemView.rank_text.text = item.rate.toString()
-            Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
-
-            if(type =="list") {
-                if (rememberList.isNotEmpty()) {
-                    itemView.add_time_title.visibility = View.VISIBLE
-                    itemView.add_time_text.visibility = View.VISIBLE
-
-                    for (i in listItems.indices) {
-                        for (j in rememberList.indices) {
-                            if (listItems[i].id == rememberList[j].id) {
-                                listItems[i].time = rememberList[j].time
-                                listItems[i].check = true
-                                break
-                            } else {
-                                listItems[i].check = false
-                            }
-                        }
-                    }
-                } else {
-                    for (i in listItems.indices) {
-                        listItems[i].check = false
-                    }
-                }
-            }
-            if(type == "remember") {
-                itemView.add_time_title.visibility = View.VISIBLE
-                itemView.add_time_text.visibility = View.VISIBLE
-                itemView.add_time_text.text = item.time
-            }else {
-                itemView.add_time_title.visibility = View.GONE
-                itemView.add_time_text.visibility = View.GONE
-            }
-
-            if(item.check){
-                rememberBtnOn(itemView)
-            }else {
-                rememberBtnOff(itemView)
-            }
-            itemView.setOnSingleClickListener {
-                val intent = Intent(context, RoomsDetailActivity::class.java)
-                intent.putExtra("item", item)
-                context.startActivity(intent)
-            }
-            itemView.btn_remember_off.setOnSingleClickListener {
-                item.check = true
-                rememberBtnOn(itemView)
-
-                rememberListener.onClick(item)
-            }
-            itemView.btn_remember_on.setOnSingleClickListener {
-                item.check = false
-
-                rememberBtnOff(itemView)
-                rememberListener.onClick(item)
-            }
+            itemView.title.text = item[position].name
+//            itemView.rank_text.text = item.rate.toString()
+//            Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
+//
+//            if(type =="list") {
+//                if (rememberList.isNotEmpty()) {
+//                    itemView.add_time_title.visibility = View.VISIBLE
+//                    itemView.add_time_text.visibility = View.VISIBLE
+//
+//                    for (i in listItems.indices) {
+//                        for (j in rememberList.indices) {
+//                            if (listItems[i].id == rememberList[j].id) {
+//                                listItems[i].time = rememberList[j].time
+//                                listItems[i].check = true
+//                                break
+//                            } else {
+//                                listItems[i].check = false
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    for (i in listItems.indices) {
+//                        listItems[i].check = false
+//                    }
+//                }
+//            }
+//            if(type == "remember") {
+//                itemView.add_time_title.visibility = View.VISIBLE
+//                itemView.add_time_text.visibility = View.VISIBLE
+//                itemView.add_time_text.text = item.time
+//            }else {
+//                itemView.add_time_title.visibility = View.GONE
+//                itemView.add_time_text.visibility = View.GONE
+//            }
+//
+//            if(item.check){
+//                rememberBtnOn(itemView)
+//            }else {
+//                rememberBtnOff(itemView)
+//            }
+//            itemView.setOnSingleClickListener {
+//                val intent = Intent(context, RoomsDetailActivity::class.java)
+//                intent.putExtra("item", item)
+//                context.startActivity(intent)
+//            }
+//            itemView.btn_remember_off.setOnSingleClickListener {
+//                item.check = true
+//                rememberBtnOn(itemView)
+//
+//                rememberListener.onClick(item)
+//            }
+//            itemView.btn_remember_on.setOnSingleClickListener {
+//                item.check = false
+//
+//                rememberBtnOff(itemView)
+//                rememberListener.onClick(item)
+//            }
+//        }
+//    }
+//    private fun rememberBtnOn(itemView: View) {
+//        itemView.btn_remember_off.visibility = View.GONE
+//        itemView.btn_remember_on.visibility = View.VISIBLE
+//    }
+//    private fun rememberBtnOff(itemView: View) {
+//        itemView.btn_remember_off.visibility = View.VISIBLE
+//        itemView.btn_remember_on.visibility = View.GONE
+//    }
         }
     }
-    private fun rememberBtnOn(itemView: View) {
-        itemView.btn_remember_off.visibility = View.GONE
-        itemView.btn_remember_on.visibility = View.VISIBLE
-    }
-    private fun rememberBtnOff(itemView: View) {
-        itemView.btn_remember_off.visibility = View.VISIBLE
-        itemView.btn_remember_on.visibility = View.GONE
-    }
-
 }

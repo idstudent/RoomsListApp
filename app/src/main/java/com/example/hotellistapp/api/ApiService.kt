@@ -7,9 +7,9 @@ import retrofit2.http.Path
 
 interface ApiService {
     @GET("json/{num}")
-    fun getRoomsList(
+    suspend fun getRoomsList(
         @Path("num") num : String
-    ) : Call<RoomsResponse>
+    ) : RoomsResponse
 
     companion object {
         const val  BASE_URL = "https://www.gccompany.co.kr/App/"
