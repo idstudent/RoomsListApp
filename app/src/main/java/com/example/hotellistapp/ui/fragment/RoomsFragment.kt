@@ -14,10 +14,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.hotellistapp.R
 import com.example.hotellistapp.adapter.RoomsListAdapter
 import com.example.hotellistapp.api.ApiManager
-import com.example.hotellistapp.api.RoomsResponse
 import com.example.hotellistapp.db.entity.RoomsRememberEntity
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -36,7 +37,7 @@ class RoomsFragment : BaseFragment() {
     private var pageCheck = 1
     private var totalPage = 0
     private var call = false
-
+    private var progressBar : ProgressBar ?= null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_rooms, container, false)
     }
@@ -52,10 +53,10 @@ class RoomsFragment : BaseFragment() {
         pageCheck = 1
         likeCheck()
 
-        val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
+        progressBar = view?.findViewById(R.id.progress)
         progressBar?.visibility = View.VISIBLE
 
-        roomsListAdapter = RoomsListAdapter(activity!!, listItems, rememberList, "list")
+        roomsListAdapter = RoomsListAdapter(requireActivity(), listItems, rememberList, "list")
         roomsListAdapter.rememberListener(rememberListener)
 
         val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
@@ -88,32 +89,33 @@ class RoomsFragment : BaseFragment() {
 
         call = false
 
-        ApiManager.getInstance().getRoomsList("$i.json").enqueue(object : retrofit2.Callback<RoomsResponse>{
-            override fun onFailure(call: retrofit2.Call<RoomsResponse>, t: Throwable) {
+        ApiManager.getInstance().getRoomsList("$i.json").enqueue(object : retrofit2.Callback<JsonElement>{
+            override fun onFailure(call: retrofit2.Call<JsonElement>, t: Throwable) {
             }
 
-            override fun onResponse(call: retrofit2.Call<RoomsResponse>, response: Response<RoomsResponse>) {
-                val totalCount = response.body()?.data?.cnt!!
-                if(totalCount % 20 == 0){
-                    totalPage = totalCount/20
-                } else {
-                    totalPage = totalCount/20 + 1
-                }
+            override fun onResponse(call: retrofit2.Call<JsonElement>, response: Response<JsonElement>) {
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        val body = it.asJsonObject
+                        val data = body.getAsJsonObject("data")
+                        val total = data.get("totalCount").asInt
+                        val product = data["product"].asJsonArray
+                        if (total % 20 == 0) {
+                            totalPage = total/20
+                        }else {
+                            totalPage = total/20 + 1
+                        }
 
-                for(i in 0 until response.body()?.data?.product?.size!!) {
-                    listItems.add(ProductInfos(
-                        response.body()?.data?.product?.get(i)?.id!!,
-                        response.body()?.data?.product?.get(i)?.name!!,
-                        response.body()?.data?.product?.get(i)?.image!!,
-                        response.body()?.data?.product?.get(i)?.info?.imgPath!!,
-                        response.body()?.data?.product?.get(i)?.info?.subject!!,
-                        response.body()?.data?.product?.get(i)?.info?.price!!,
-                        response.body()?.data?.product?.get(i)?.rate!!))
+                        for(item in product) {
+                            val test = Gson().fromJson(item, ProductInfos::class.java)
+                            listItems.add(test)
+                        }
+
+                        progressBar?.visibility = View.GONE
+                        roomsListAdapter.notifyDataSetChanged()
+                    }
                 }
-                progress.visibility = View.GONE
-                roomsListAdapter.notifyDataSetChanged()
             }
-
         })
     }
     private val rememberListener = object : ItemClickListener {
