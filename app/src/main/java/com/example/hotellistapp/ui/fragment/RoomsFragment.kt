@@ -31,10 +31,8 @@ import kotlin.collections.ArrayList
 class RoomsFragment : BaseFragment() {
     private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var roomsListAdapter: RoomsListAdapter
-    private var listItems = ArrayList<ProductInfos>()
     private var rememberList = ArrayList<ProductInfos>()
     private var pageCheck = 1
-    private var totalPage = 0
     private var call = false
 
     private val viewModel : RoomsViewModel by viewModels()
@@ -50,13 +48,12 @@ class RoomsFragment : BaseFragment() {
     }
     private fun init() {
         compositeDisposable = CompositeDisposable()
-        listItems.clear()
         pageCheck = 1
         likeCheck()
 
         val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
 
-        roomsListAdapter = RoomsListAdapter(requireActivity(), listItems, rememberList, "list")
+        roomsListAdapter = RoomsListAdapter(requireActivity(), rememberList, "list")
         roomsListAdapter.rememberListener(rememberListener)
 
         val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)

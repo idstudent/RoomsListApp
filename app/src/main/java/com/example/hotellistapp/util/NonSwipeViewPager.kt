@@ -1,4 +1,4 @@
-package com.example.hotellistapp
+package com.example.hotellistapp.util
 
 import android.content.Context
 import android.util.AttributeSet

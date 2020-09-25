@@ -1,6 +1,5 @@
 package com.example.hotellistapp.model
 
-import com.example.hotellistapp.api.RoomsResponse
 import java.io.Serializable
 
 data class ProductInfos(

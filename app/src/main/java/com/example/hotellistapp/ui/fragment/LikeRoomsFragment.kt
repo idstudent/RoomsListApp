@@ -40,7 +40,7 @@ class LikeRoomsFragment : BaseFragment() {
 
         compositeDisposable = CompositeDisposable()
         rememberRecyclerView = view?.findViewById(R.id.remember_list)!!
-        roomsListAdapter = RoomsListAdapter(activity!!, listItems, checkList, "remember")
+        roomsListAdapter = RoomsListAdapter(requireActivity(), checkList, "remember")
         roomsListAdapter.rememberListener(deleteListener)
         rememberRecyclerView.adapter = roomsListAdapter
         rememberRecyclerView.layoutManager = LinearLayoutManager(activity)
@@ -51,12 +51,10 @@ class LikeRoomsFragment : BaseFragment() {
         sortSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = sortSpinner
 
-        getRememberList()
+        latelyAddSelect()
         setSpinner()
     }
-    private fun getRememberList() {
-        latelyAddSelect()
-    }
+
     private fun latelyAddSelect() {
 
         listItems.clear()
