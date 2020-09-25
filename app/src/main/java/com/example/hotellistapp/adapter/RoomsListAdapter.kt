@@ -28,9 +28,9 @@ class RoomsListAdapter (
 ) : RecyclerView.Adapter<RoomsListAdapter.ItemViewHolder>() {
 
     private lateinit var rememberListener : ItemClickListener
-    private var items : ArrayList<List<RoomsResponse.Data.Product>> = ArrayList()
+    private var items : ArrayList<ProductInfos> = ArrayList()
 
-    fun updateItems(items : ArrayList<List<RoomsResponse.Data.Product>>) {
+    fun updateItems(items : ArrayList<ProductInfos>) {
         this.items = items
 
         notifyDataSetChanged()
@@ -56,7 +56,7 @@ class RoomsListAdapter (
             val position = adapterPosition
             val item = items[position]
 
-            itemView.title.text = item[position].name
+            itemView.title.text = item.name
 //            itemView.rank_text.text = item.rate.toString()
 //            Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
 //

@@ -43,11 +43,11 @@ class RoomsFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_rooms, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         init()
-    }
 
+    }
     private fun init() {
         compositeDisposable = CompositeDisposable()
         listItems.clear()
@@ -55,7 +55,6 @@ class RoomsFragment : BaseFragment() {
         likeCheck()
 
         val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
-//        progressBar?.visibility = View.VISIBLE
 
         roomsListAdapter = RoomsListAdapter(requireActivity(), listItems, rememberList, "list")
         roomsListAdapter.rememberListener(rememberListener)
@@ -66,73 +65,43 @@ class RoomsFragment : BaseFragment() {
         val layoutManger = LinearLayoutManager(activity)
         roomsRecyclerView?.layoutManager = layoutManger
 
-//        roomsGetList(1)
         viewModel.roomsGetList(1)
 
         viewModel.apply {
-
-            itemLiveData.observe(this@RoomsFragment, androidx.lifecycle.Observer {
+            // 프래그먼트 생명주기때문에 this가 아닌 viewLifecycleOwner을 써줘야된다고함
+            // http://pluu.github.io/blog/android/2020/01/25/android-fragment-lifecycle/
+            viewModel.itemLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.updateItems(it)
-            })
-            loadingLiveData.observe(this@RoomsFragment, androidx.lifecycle.Observer {
-                progressBar?.visibility = if(it) View.VISIBLE else View.GONE
-            })
-            roomsRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
 
-                    if(!roomsRecyclerView.canScrollVertically(1) && pageCheck < viewModel.totalCount) {
-                        progressBar?.visibility = View.VISIBLE
-                        // 엄청 빠르게 스크롤시 연달아 호출해서 리스트 1개가 안나옴, 그래서 call로 체크해서 이를 방지
-                        if(!call) {
-                            pageCheck++
-                            Handler(Looper.getMainLooper()).postDelayed({
-//                            roomsGetList(pageCheck)
-                                itemLiveData.observe(this@RoomsFragment, androidx.lifecycle.Observer {
+            })
+            loadingLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                progressBar?.visibility = if(it) View.VISIBLE else View.GONE
+
+                roomsRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
+
+                        if(!roomsRecyclerView.canScrollVertically(1) && pageCheck < viewModel.totalCount) {
+                            progressBar?.visibility = View.VISIBLE
+
+                            // 엄청 빠르게 스크롤시 연달아 호출해서 리스트 1개가 안나옴, 그래서 call로 체크해서 이를 방지
+                            if(!call) {
+                                pageCheck++
+                                Handler(Looper.getMainLooper()).postDelayed({
                                     roomsGetList(pageCheck)
-                                    roomsListAdapter.updateItems(it)
-                                })
-                            }, 1500)
+                                }, 1500)
+                                call = true
+                            }else {
+                                call = false
+                            }
                         }
-                        call = true
                     }
-                }
+                })
             })
         }
 
     }
-//    private fun roomsGetList(i : Int) {
-//
-//        call = false
-//
-//        ApiManager.getInstance().getRoomsList("$i.json").enqueue(object : retrofit2.Callback<RoomsResponse>{
-//            override fun onFailure(call: retrofit2.Call<RoomsResponse>, t: Throwable) {
-//            }
-//
-//            override fun onResponse(call: retrofit2.Call<RoomsResponse>, response: Response<RoomsResponse>) {
-//                val totalCount = response.body()?.data?.cnt!!
-//                if(totalCount % 20 == 0){
-//                    totalPage = totalCount/20
-//                } else {
-//                    totalPage = totalCount/20 + 1
-//                }
-//
-//                for(i in 0 until response.body()?.data?.product?.size!!) {
-//                    listItems.add(ProductInfos(
-//                        response.body()?.data?.product?.get(i)?.id!!,
-//                        response.body()?.data?.product?.get(i)?.name!!,
-//                        response.body()?.data?.product?.get(i)?.image!!,
-//                        response.body()?.data?.product?.get(i)?.info?.imgPath!!,
-//                        response.body()?.data?.product?.get(i)?.info?.subject!!,
-//                        response.body()?.data?.product?.get(i)?.info?.price!!,
-//                        response.body()?.data?.product?.get(i)?.rate!!))
-//                }
-//                progress.visibility = View.GONE
-//                roomsListAdapter.notifyDataSetChanged()
-//            }
-//
-//        })
-//    }
+
     private val rememberListener = object : ItemClickListener {
         override fun onClick(item: ProductInfos) {
             if (item.check) {
