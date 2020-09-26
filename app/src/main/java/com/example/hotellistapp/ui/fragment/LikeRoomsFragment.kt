@@ -68,46 +68,11 @@ class LikeRoomsFragment : BaseFragment() {
 
     private val deleteListener = object : ItemClickListener {
         override fun onClick(item: ProductInfos) {
-            deleteList(item)
+            viewModel.deleteList(item, pos)
+            Toast.makeText(context, R.string.delete_text, Toast.LENGTH_SHORT).show()
         }
     }
-    private fun deleteList(item : ProductInfos) {
-        compositeDisposable.add(
-            Observable.fromCallable {
-                dbManager.roomsRememberDAO().deleteItem(item.id)
-            }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    redrawList()
-                },{
-                    Log.e("tag", "exception $it")
-                })
-        )
-    }
-    private fun redrawList() {
-        listItems.clear()
-        compositeDisposable.add(
-            dbManager.roomsRememberDAO().latelyAddSelect()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    for (i in it.indices) {
-                        listItems.add(
-                            ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
-                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
-                            )
-                        )
-                    }
-                    Toast.makeText(activity,R.string.delete_text, Toast.LENGTH_SHORT).show()
-                    roomsListAdapter.notifyDataSetChanged()
-                }, {
 
-                })
-        )
-    }
     private fun setSpinner() {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {}

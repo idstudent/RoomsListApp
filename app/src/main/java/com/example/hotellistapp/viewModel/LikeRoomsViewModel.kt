@@ -2,10 +2,13 @@ package com.example.hotellistapp.viewModel
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.example.hotellistapp.R
 import com.example.hotellistapp.db.DBManager
 import com.example.hotellistapp.model.ProductInfos
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -75,5 +78,30 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
                    selectLiveData.value = listItems
                 }!!
         )
+    }
+
+    fun deleteList(item : ProductInfos, pos : Int) {
+        compositeDisposable.add(
+            Observable.fromCallable {
+                dbManager?.roomsRememberDAO()?.deleteItem(item.id)
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    redrawList(pos)
+                },{
+                    Log.e("tag", "exception $it")
+                })
+        )
+    }
+    fun redrawList(pos: Int) {
+        listItems.clear()
+
+        when(pos) {
+            0->latelySelect()
+            1->rateDESCSelect()
+            2->rateASCSelect()
+        }
     }
 }
