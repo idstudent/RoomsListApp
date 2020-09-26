@@ -14,9 +14,9 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
     private var listItems = ArrayList<ProductInfos>()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val dbManager = DBManager.getInstance(application)
-    val latelySelectLiveData = MutableLiveData<ArrayList<ProductInfos>>()
+    val selectLiveData = MutableLiveData<ArrayList<ProductInfos>>()
 
-    fun select() {
+    fun latelySelect() {
         listItems.clear()
 
         compositeDisposable.add(
@@ -32,7 +32,47 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
                             )
                         )
                     }
-                    latelySelectLiveData.value = listItems
+                    selectLiveData.value = listItems
+                }!!
+        )
+    }
+    fun rateASCSelect() {
+        listItems.clear()
+
+        compositeDisposable.add(
+            dbManager?.roomsRememberDAO()?.rateASC()
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe{
+                    for (i in it.indices) {
+                        listItems.add(
+                            ProductInfos(
+                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
+                            )
+                        )
+                    }
+                    selectLiveData.value = listItems
+                }!!
+        )
+    }
+    fun rateDESCSelect() {
+        listItems.clear()
+
+        compositeDisposable.add(
+            dbManager?.roomsRememberDAO()?.rateDESC()
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe {
+                    for (i in it.indices) {
+                        listItems.add(
+                            ProductInfos(
+                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
+                            )
+                        )
+                    }
+                   selectLiveData.value = listItems
                 }!!
         )
     }

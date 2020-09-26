@@ -59,56 +59,13 @@ class LikeRoomsFragment : BaseFragment() {
         spinner.adapter = sortSpinner
 
         viewModel.apply {
-            viewModel.latelySelectLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.selectLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.updateItems(it)
             })
-            this.select()
+            this.latelySelect()
         }
     }
 
-    private fun rateASCSelect() {
-        listItems.clear()
-
-        compositeDisposable.add(
-            dbManager.roomsRememberDAO().rateASC()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    for (i in it.indices) {
-                        listItems.add(
-                            ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
-                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
-                            )
-                        )
-                    }
-
-                    roomsListAdapter.notifyDataSetChanged()
-                }, {}
-                )
-        )
-    }
-    private fun rateDESCSelect() {
-        listItems.clear()
-
-        compositeDisposable.add(
-            dbManager.roomsRememberDAO().rateDESC()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    for (i in it.indices) {
-                        listItems.add(
-                            ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
-                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
-                            )
-                        )
-                    }
-                    roomsListAdapter.notifyDataSetChanged()
-                }, {}
-                )
-        )
-    }
     private val deleteListener = object : ItemClickListener {
         override fun onClick(item: ProductInfos) {
             deleteList(item)
@@ -159,11 +116,11 @@ class LikeRoomsFragment : BaseFragment() {
                 pos = position
 
                 if(sortSpinner.getItem(position) == "등록순") {
-                    viewModel.select()
+                    viewModel.latelySelect()
                 }else if(sortSpinner.getItem(position) == "평점 높은순"){
-                    rateDESCSelect()
+                    viewModel.rateDESCSelect()
                 }else {
-                    rateASCSelect()
+                    viewModel.rateASCSelect()
                 }
             }
         }
