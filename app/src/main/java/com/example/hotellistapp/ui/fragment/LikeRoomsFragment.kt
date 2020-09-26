@@ -25,9 +25,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class LikeRoomsFragment : BaseFragment() {
-    private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var roomsListAdapter : RoomsListAdapter
-    private var listItems = ArrayList<ProductInfos>()
     private lateinit var spinner : Spinner
     private lateinit var sortSpinner : ArrayAdapter<CharSequence>
     private lateinit var rememberRecyclerView : RecyclerView
@@ -44,10 +42,8 @@ class LikeRoomsFragment : BaseFragment() {
         setSpinner()
     }
     private fun init() {
-
-        compositeDisposable = CompositeDisposable()
         rememberRecyclerView = view?.findViewById(R.id.remember_list)!!
-        roomsListAdapter = RoomsListAdapter(requireActivity(), listItems, "remember")
+        roomsListAdapter = RoomsListAdapter(requireActivity(),"remember")
         roomsListAdapter.rememberListener(deleteListener)
         rememberRecyclerView.adapter = roomsListAdapter
         rememberRecyclerView.layoutManager = LinearLayoutManager(activity)

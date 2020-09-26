@@ -14,7 +14,7 @@ abstract class BaseActivity : AppCompatActivity() {
     private lateinit var layoutContainer: FrameLayout
     protected lateinit var dbManager: DBManager
 
-    val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    protected val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

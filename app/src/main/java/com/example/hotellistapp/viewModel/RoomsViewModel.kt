@@ -24,11 +24,34 @@ import kotlin.collections.ArrayList
 class RoomsViewModel(application: Application) : AndroidViewModel(application) {
 
     val itemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
+    val rememberItemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
     private val itemList = ArrayList<ProductInfos>()
+    private val rememberList = ArrayList<ProductInfos>()
     val loadingLiveData = MutableLiveData<Boolean>()
     var totalCount : Int = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val dbManager = DBManager.getInstance(application)
+
+
+    fun likeCheck() {
+        rememberList.clear()
+        compositeDisposable.add(
+            dbManager?.roomsRememberDAO()?.select()
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe{
+                    for (i in it.indices) {
+                        rememberList.add(
+                            ProductInfos(
+                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
+                            )
+                        )
+                    }
+                    rememberItemLiveData.value = rememberList
+                }!!
+        )
+    }
 
     fun insert(item : ProductInfos) {
         val time = System.currentTimeMillis()

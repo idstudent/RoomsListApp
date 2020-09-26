@@ -29,9 +29,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class RoomsFragment : BaseFragment() {
-    private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var roomsListAdapter: RoomsListAdapter
-    private var rememberList = ArrayList<ProductInfos>()
     private var pageCheck = 1
     private var call = false
 
@@ -47,13 +45,12 @@ class RoomsFragment : BaseFragment() {
 
     }
     private fun init() {
-        compositeDisposable = CompositeDisposable()
         pageCheck = 1
-        likeCheck()
+        viewModel.likeCheck()
 
         val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
 
-        roomsListAdapter = RoomsListAdapter(requireActivity(), rememberList, "list")
+        roomsListAdapter = RoomsListAdapter(requireActivity(),"list")
         roomsListAdapter.rememberListener(rememberListener)
 
         val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
@@ -67,6 +64,9 @@ class RoomsFragment : BaseFragment() {
         viewModel.apply {
             // 프래그먼트 생명주기때문에 this가 아닌 viewLifecycleOwner을 써줘야된다고함
             // http://pluu.github.io/blog/android/2020/01/25/android-fragment-lifecycle/
+            viewModel.rememberItemLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                roomsListAdapter.rememberItems(it)
+            })
             viewModel.itemLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.updateItems(it)
 
@@ -80,7 +80,6 @@ class RoomsFragment : BaseFragment() {
 
                         if(!roomsRecyclerView.canScrollVertically(1) && pageCheck < viewModel.totalCount) {
                             progressBar?.visibility = View.VISIBLE
-
                             // 엄청 빠르게 스크롤시 연달아 호출해서 리스트 1개가 안나옴, 그래서 call로 체크해서 이를 방지
                             if(!call) {
                                 pageCheck++
@@ -109,27 +108,5 @@ class RoomsFragment : BaseFragment() {
                 Toast.makeText(activity, R.string.delete_text, Toast.LENGTH_SHORT).show()
             }
         }
-    }
-    
-    private fun likeCheck() {
-        rememberList.clear()
-        compositeDisposable.add(
-            dbManager.roomsRememberDAO().select()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    for (i in it.indices) {
-                        rememberList.add(
-                            ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
-                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
-                            )
-                        )
-                    }
-                    roomsListAdapter.notifyDataSetChanged()
-                }, {
-
-                })
-        )
     }
 }

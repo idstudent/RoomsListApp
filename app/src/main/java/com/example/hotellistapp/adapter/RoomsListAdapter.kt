@@ -16,15 +16,20 @@ import kotlinx.android.synthetic.main.item_rooms.view.*
 
 class RoomsListAdapter (
     private val context : Context,
-    private var rememberList : List<ProductInfos>,
     private var type : String
 ) : RecyclerView.Adapter<RoomsListAdapter.ItemViewHolder>() {
 
     private lateinit var rememberListener : ItemClickListener
     private var items : ArrayList<ProductInfos> = ArrayList()
+    private var rememberItems : ArrayList<ProductInfos> = ArrayList()
 
     fun updateItems(items : ArrayList<ProductInfos>) {
         this.items = items
+
+        notifyDataSetChanged()
+    }
+    fun rememberItems(rememberItems : ArrayList<ProductInfos>) {
+        this.rememberItems = rememberItems
 
         notifyDataSetChanged()
     }
@@ -54,14 +59,11 @@ class RoomsListAdapter (
             Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
 
             if(type =="list") {
-                if (rememberList.isNotEmpty()) {
-                    itemView.add_time_title.visibility = View.VISIBLE
-                    itemView.add_time_text.visibility = View.VISIBLE
-
+                if (rememberItems.isNotEmpty()) {
                     for (i in items.indices) {
-                        for (j in rememberList.indices) {
-                            if (items[i].id == rememberList[j].id) {
-                                items[i].time = rememberList[j].time
+                        for (j in rememberItems.indices) {
+                            if (items[i].id == rememberItems[j].id) {
+                                items[i].time = rememberItems[j].time
                                 items[i].check = true
                                 break
                             } else {
