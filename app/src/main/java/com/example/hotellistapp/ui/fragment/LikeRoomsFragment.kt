@@ -10,12 +10,15 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotellistapp.R
 import com.example.hotellistapp.adapter.RoomsListAdapter
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
+import com.example.hotellistapp.viewModel.LikeRoomsViewModel
+import com.example.hotellistapp.viewModel.RoomsViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -28,8 +31,8 @@ class LikeRoomsFragment : BaseFragment() {
     private lateinit var spinner : Spinner
     private lateinit var sortSpinner : ArrayAdapter<CharSequence>
     private lateinit var rememberRecyclerView : RecyclerView
-    private val checkList = ArrayList<ProductInfos>()
     private var pos = -1
+    private val viewModel : LikeRoomsViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_rooms_like, container, false)
@@ -37,10 +40,14 @@ class LikeRoomsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        init()
+        setSpinner()
+    }
+    private fun init() {
 
         compositeDisposable = CompositeDisposable()
         rememberRecyclerView = view?.findViewById(R.id.remember_list)!!
-        roomsListAdapter = RoomsListAdapter(requireActivity(), checkList, "remember")
+        roomsListAdapter = RoomsListAdapter(requireActivity(), listItems, "remember")
         roomsListAdapter.rememberListener(deleteListener)
         rememberRecyclerView.adapter = roomsListAdapter
         rememberRecyclerView.layoutManager = LinearLayoutManager(activity)
@@ -51,34 +58,14 @@ class LikeRoomsFragment : BaseFragment() {
         sortSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = sortSpinner
 
-        latelyAddSelect()
-        setSpinner()
+        viewModel.apply {
+            viewModel.latelySelectLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                roomsListAdapter.updateItems(it)
+            })
+            this.select()
+        }
     }
 
-    private fun latelyAddSelect() {
-
-        listItems.clear()
-
-        compositeDisposable.add(
-            dbManager.roomsRememberDAO().latelyAddSelect()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    for (i in it.indices) {
-                        listItems.add(
-                            ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
-                                it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
-                            )
-                        )
-                    }
-
-                    roomsListAdapter.notifyDataSetChanged()
-                }, {
-
-                })
-        )
-    }
     private fun rateASCSelect() {
         listItems.clear()
 
@@ -95,6 +82,7 @@ class LikeRoomsFragment : BaseFragment() {
                             )
                         )
                     }
+
                     roomsListAdapter.notifyDataSetChanged()
                 }, {}
                 )
@@ -171,7 +159,7 @@ class LikeRoomsFragment : BaseFragment() {
                 pos = position
 
                 if(sortSpinner.getItem(position) == "등록순") {
-                    latelyAddSelect()
+                    viewModel.select()
                 }else if(sortSpinner.getItem(position) == "평점 높은순"){
                     rateDESCSelect()
                 }else {

@@ -29,8 +29,6 @@ abstract class BaseActivity : AppCompatActivity() {
             layoutContainer = layout.findViewById(R.id.layout_container) as FrameLayout
 
             LayoutInflater.from(this).inflate(layoutResID, layoutContainer, true)
-        }else {
-
         }
         super.setContentView(layout)
     }

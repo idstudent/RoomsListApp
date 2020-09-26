@@ -1,20 +1,76 @@
 package com.example.hotellistapp.viewModel
 
+import android.app.Application
+import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hotellistapp.R
 import com.example.hotellistapp.api.ApiManager
+import com.example.hotellistapp.db.DBManager
+import com.example.hotellistapp.db.entity.RoomsRememberEntity
 import com.example.hotellistapp.model.ProductInfos
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-class RoomsViewModel : ViewModel() {
+class RoomsViewModel(application: Application) : AndroidViewModel(application) {
+
     val itemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
-    val itemList = ArrayList<ProductInfos>()
+    private val itemList = ArrayList<ProductInfos>()
     val loadingLiveData = MutableLiveData<Boolean>()
     var totalCount : Int = 0
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val dbManager = DBManager.getInstance(application)
 
+    fun insert(item : ProductInfos) {
+        val time = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        var curTime = dateFormat.format(Date(time))
+        val insert = Observable.just(
+            RoomsRememberEntity(
+                id = item.id,
+                name = item.name,
+                thumbnail = item.thumbnail,
+                imgPath = item.imgUrl,
+                subject = item.subject,
+                price = item.price,
+                rate = item.rate,
+                time = curTime,
+                check = item.check
+            )
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .doOnNext {
+                dbManager?.roomsRememberDAO()?.insert(it)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {}
+        compositeDisposable.add(insert)
+    }
+    fun delete(item : ProductInfos) {
+        compositeDisposable.add(
+            Observable.fromCallable {
+                dbManager?.roomsRememberDAO()?.deleteItem(item.id)
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {}
+        )
+    }
     fun roomsGetList(i: Int) {
         loadingLiveData.value = true
+
+        //코루틴
         viewModelScope.launch {
             val productResponse =  ApiManager.getInstance().getRoomsList("$i.json")
             val productInfosObject = productResponse.asJsonObject

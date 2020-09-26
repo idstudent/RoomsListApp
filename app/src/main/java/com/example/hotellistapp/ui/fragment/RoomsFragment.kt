@@ -102,59 +102,15 @@ class RoomsFragment : BaseFragment() {
     private val rememberListener = object : ItemClickListener {
         override fun onClick(item: ProductInfos) {
             if (item.check) {
-                insertList(item)
-
+                viewModel.insert(item)
+                Toast.makeText(activity, R.string.insert_text, Toast.LENGTH_SHORT).show()
             } else {
-                deleteList(item)
+                viewModel.delete(item)
+                Toast.makeText(activity, R.string.delete_text, Toast.LENGTH_SHORT).show()
             }
         }
     }
-
-    private fun insertList(item: ProductInfos) {
-        val time = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        var curTime = dateFormat.format(Date(time))
-        val insert = Observable.just(
-            RoomsRememberEntity(
-                id = item.id,
-                name = item.name,
-                thumbnail = item.thumbnail,
-                imgPath = item.imgUrl,
-                subject = item.subject,
-                price = item.price,
-                rate = item.rate,
-                time = curTime,
-                check = item.check
-            )
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .doOnNext {
-                dbManager.roomsRememberDAO().insert(it)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                Toast.makeText(activity, R.string.insert_text, Toast.LENGTH_SHORT).show()
-            }
-        compositeDisposable.add(insert)
-    }
-
-    private fun deleteList(item: ProductInfos) {
-        compositeDisposable.add(
-            Observable.fromCallable {
-                dbManager.roomsRememberDAO().deleteItem(item.id)
-            }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Toast.makeText(activity, R.string.delete_text, Toast.LENGTH_SHORT).show()
-                }, {
-                    Log.e("tag", "exception $it")
-                })
-        )
-    }
-
+    
     private fun likeCheck() {
         rememberList.clear()
         compositeDisposable.add(
