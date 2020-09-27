@@ -25,14 +25,28 @@ class RoomsViewModel(application: Application) : AndroidViewModel(application) {
 
     val itemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
     val rememberItemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
+    val detailRememberItemLiveData = MutableLiveData<ArrayList<Int>>()
     private val itemList = ArrayList<ProductInfos>()
     private val rememberList = ArrayList<ProductInfos>()
+    private val detailRememberList = ArrayList<Int>()
     val loadingLiveData = MutableLiveData<Boolean>()
     var totalCount : Int = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val dbManager = DBManager.getInstance(application)
 
-
+    fun detailActivityLikeCheck() {
+        compositeDisposable.add(
+            dbManager?.roomsRememberDAO()?.select()
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe{
+                    for(i in it.indices) {
+                        detailRememberList.add(it[i].id)
+                    }
+                    detailRememberItemLiveData.value = detailRememberList
+                }!!
+        )
+    }
     fun likeCheck() {
         rememberList.clear()
         compositeDisposable.add(
@@ -67,7 +81,7 @@ class RoomsViewModel(application: Application) : AndroidViewModel(application) {
                 price = item.price,
                 rate = item.rate,
                 time = curTime,
-                check = item.check
+                check = true
             )
         )
             .subscribeOn(Schedulers.io())

@@ -6,11 +6,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
 import com.example.hotellistapp.db.entity.RoomsRememberEntity
 import com.example.hotellistapp.model.ProductInfos
 import com.example.hotellistapp.util.setOnSingleClickListener
+import com.example.hotellistapp.viewModel.RoomsViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -21,6 +25,7 @@ import java.util.*
 
 class RoomsDetailActivity : BaseActivity() {
     private lateinit var item : ProductInfos
+    private val viewModel : RoomsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +35,7 @@ class RoomsDetailActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         init()
-        likeCheck()
+//        likeCheck()
     }
     private fun init() {
         main_tablayout.visibility = View.GONE
@@ -50,31 +55,32 @@ class RoomsDetailActivity : BaseActivity() {
         btn_remember_off.setOnSingleClickListener {
             btn_remember_off.visibility = View.GONE
             btn_remember_on.visibility = View.VISIBLE
-            insertList(item)
+            viewModel.insert(item)
+            Toast.makeText(this, R.string.insert_text, Toast.LENGTH_SHORT).show()
         }
         btn_remember_on.setOnSingleClickListener {
             btn_remember_off.visibility = View.VISIBLE
             btn_remember_on.visibility = View.GONE
-            deleteList(id)
+            viewModel.delete(item)
+            Toast.makeText(this, R.string.delete_text, Toast.LENGTH_SHORT).show()
         }
+        likeCheck()
     }
     private fun likeCheck() {
-        compositeDisposable.add(
-            dbManager.roomsRememberDAO().select()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    for(i in it.indices) {
-                        if (item.id == it[i].id){
-                            btn_remember_off.visibility = View.GONE
-                            btn_remember_on.visibility = View.VISIBLE
-                        }
-                    }
-                }, {
 
-                })
-        )
+        viewModel.apply {
+            viewModel.detailActivityLikeCheck()
+            viewModel.detailRememberItemLiveData.observe(this@RoomsDetailActivity, androidx.lifecycle.Observer {
+                for(i in it.indices) {
+                    if (item.id == it[i]){
+                        btn_remember_off.visibility = View.GONE
+                        btn_remember_on.visibility = View.VISIBLE
+                    }
+                }
+            })
+        }
     }
+
     private fun insertList(item : ProductInfos) {
         val time = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -89,7 +95,7 @@ class RoomsDetailActivity : BaseActivity() {
                 price = item.price,
                 rate = item.rate,
                 time = curTime,
-                check = true
+                check = item.check
             )
         )
             .subscribeOn(Schedulers.io())

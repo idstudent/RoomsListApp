@@ -44,9 +44,14 @@ class RoomsFragment : BaseFragment() {
         init()
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.likeCheck()
+
+    }
     private fun init() {
         pageCheck = 1
-        viewModel.likeCheck()
 
         val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
 
@@ -63,6 +68,7 @@ class RoomsFragment : BaseFragment() {
 
         viewModel.apply {
             // 프래그먼트 생명주기때문에 this가 아닌 viewLifecycleOwner을 써줘야된다고함
+            // this쓰면 호출2번해서 리스트가 2개나옴
             // http://pluu.github.io/blog/android/2020/01/25/android-fragment-lifecycle/
             viewModel.rememberItemLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.rememberItems(it)
