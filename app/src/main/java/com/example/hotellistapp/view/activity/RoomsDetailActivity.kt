@@ -1,4 +1,4 @@
-package com.example.hotellistapp.ui.activity
+package com.example.hotellistapp.view.activity
 
 import android.os.Bundle
 import android.view.View

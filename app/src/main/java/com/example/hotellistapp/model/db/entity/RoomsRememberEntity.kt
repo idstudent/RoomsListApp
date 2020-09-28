@@ -1,4 +1,4 @@
-package com.example.hotellistapp.db.entity
+package com.example.hotellistapp.model.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

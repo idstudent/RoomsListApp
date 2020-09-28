@@ -1,10 +1,10 @@
-package com.example.hotellistapp.db.dao
+package com.example.hotellistapp.model.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.hotellistapp.db.entity.RoomsRememberEntity
+import com.example.hotellistapp.model.db.entity.RoomsRememberEntity
 import io.reactivex.Maybe
 
 @Dao

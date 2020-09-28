@@ -1,4 +1,4 @@
-package com.example.hotellistapp.api
+package com.example.hotellistapp.model.api
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

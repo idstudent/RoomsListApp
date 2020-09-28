@@ -2,11 +2,9 @@ package com.example.hotellistapp.viewModel
 
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.example.hotellistapp.R
-import com.example.hotellistapp.db.DBManager
+import com.example.hotellistapp.model.db.DBManager
 import com.example.hotellistapp.model.ProductInfos
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

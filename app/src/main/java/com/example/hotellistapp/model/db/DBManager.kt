@@ -1,11 +1,11 @@
-package com.example.hotellistapp.db
+package com.example.hotellistapp.model.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.hotellistapp.db.dao.RoomsRememberDAO
-import com.example.hotellistapp.db.entity.RoomsRememberEntity
+import com.example.hotellistapp.model.db.dao.RoomsRememberDAO
+import com.example.hotellistapp.model.db.entity.RoomsRememberEntity
 
 @Database(entities = [
     RoomsRememberEntity::class

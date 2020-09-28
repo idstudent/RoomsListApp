@@ -1,21 +1,13 @@
-package com.example.hotellistapp.ui.activity
+package com.example.hotellistapp.view.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import com.example.hotellistapp.R
-import com.example.hotellistapp.adapter.FragmentAdapter
-import com.example.hotellistapp.adapter.RoomsListAdapter
-import com.example.hotellistapp.model.ProductInfos
-import com.example.hotellistapp.ui.fragment.LikeRoomsFragment
-import com.example.hotellistapp.ui.fragment.RoomsFragment
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import com.example.hotellistapp.view.adapter.FragmentAdapter
+import com.example.hotellistapp.view.fragment.LikeRoomsFragment
+import com.example.hotellistapp.view.fragment.RoomsFragment
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.tab_button.view.*
 

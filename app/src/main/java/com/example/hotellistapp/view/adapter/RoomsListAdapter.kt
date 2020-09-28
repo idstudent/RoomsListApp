@@ -1,4 +1,4 @@
-package com.example.hotellistapp.adapter
+package com.example.hotellistapp.view.adapter
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
-import com.example.hotellistapp.ui.activity.RoomsDetailActivity
+import com.example.hotellistapp.view.activity.RoomsDetailActivity
 import com.example.hotellistapp.util.setOnSingleClickListener
 import kotlinx.android.synthetic.main.item_rooms.view.*
 

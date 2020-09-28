@@ -1,4 +1,4 @@
-package com.example.hotellistapp.ui.fragment
+package com.example.hotellistapp.view.fragment
 
 import androidx.fragment.app.Fragment
 import io.reactivex.disposables.CompositeDisposable

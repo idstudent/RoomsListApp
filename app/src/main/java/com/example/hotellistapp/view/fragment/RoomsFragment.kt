@@ -1,9 +1,8 @@
-package com.example.hotellistapp.ui.fragment
+package com.example.hotellistapp.view.fragment
 
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,20 +12,10 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotellistapp.R
-import com.example.hotellistapp.adapter.RoomsListAdapter
-import com.example.hotellistapp.db.entity.RoomsRememberEntity
+import com.example.hotellistapp.view.adapter.RoomsListAdapter
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
 import com.example.hotellistapp.viewModel.RoomsViewModel
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_rooms.*
-import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
 class RoomsFragment : BaseFragment() {
     private lateinit var roomsListAdapter: RoomsListAdapter

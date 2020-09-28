@@ -1,4 +1,4 @@
-package com.example.hotellistapp.ui.activity
+package com.example.hotellistapp.view.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.example.hotellistapp.R
-import com.example.hotellistapp.db.DBManager
+import com.example.hotellistapp.model.db.DBManager
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseActivity : AppCompatActivity() {
