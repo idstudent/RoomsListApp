@@ -5,9 +5,13 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
+import com.example.hotellistapp.databinding.ItemRoomsBinding
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
 import com.example.hotellistapp.view.activity.RoomsDetailActivity
@@ -38,7 +42,9 @@ class RoomsListAdapter (
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
-            LayoutInflater.from(context).inflate(R.layout.item_rooms, parent,false)
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context), R.layout.item_rooms, parent, false
+            )
         )
     }
 
@@ -49,14 +55,14 @@ class RoomsListAdapter (
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind()
     }
-    inner class ItemViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+    inner class ItemViewHolder(private val binding : ItemRoomsBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
             val position = adapterPosition
             val item = items[position]
 
-            itemView.title.text = item.name
-            itemView.rank_text.text = item.rate.toString()
-            Glide.with(context).load(item.thumbnail).into(itemView.thumbnail)
+            binding.apply {
+                productInfo = item
+            }
 
             if(type =="list") {
                 if (rememberItems.isNotEmpty()) {
@@ -118,4 +124,8 @@ class RoomsListAdapter (
         itemView.btn_remember_off.visibility = View.VISIBLE
         itemView.btn_remember_on.visibility = View.GONE
     }
+}
+@BindingAdapter("ImageUrl")
+fun loadImage(imageView : ImageView, url : String) {
+    Glide.with(imageView.context).load(url).into(imageView)
 }

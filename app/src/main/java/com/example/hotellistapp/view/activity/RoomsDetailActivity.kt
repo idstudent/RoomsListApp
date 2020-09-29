@@ -31,7 +31,7 @@ class RoomsDetailActivity : BaseActivity() {
         if(intent.hasExtra("item")) {
             item = intent.getSerializableExtra("item") as ProductInfos
 
-            title_text.text = item.name
+            title_text.text = item.title
             Glide.with(applicationContext).load(item.imgUrl).into(roomsImg)
             explain_text.text = item.subject
             price.text = "${item.price}원"

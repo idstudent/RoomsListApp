@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class RoomsRememberEntity (
     @PrimaryKey
     val id : Int,
-    val name : String,
+    val title : String,
     val thumbnail : String,
     val imgPath : String,
     val subject : String,

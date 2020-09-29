@@ -28,7 +28,7 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
                     for (i in it.indices) {
                         listItems.add(
                             ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].id, it[i].title, it[i].thumbnail, it[i].imgPath,
                                 it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
                             )
                         )
@@ -48,7 +48,7 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
                     for (i in it.indices) {
                         listItems.add(
                             ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].id, it[i].title, it[i].thumbnail, it[i].imgPath,
                                 it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
                             )
                         )
@@ -68,7 +68,7 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
                     for (i in it.indices) {
                         listItems.add(
                             ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].id, it[i].title, it[i].thumbnail, it[i].imgPath,
                                 it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
                             )
                         )

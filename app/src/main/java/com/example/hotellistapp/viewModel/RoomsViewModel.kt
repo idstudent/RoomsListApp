@@ -53,7 +53,7 @@ class RoomsViewModel(application: Application) : AndroidViewModel(application) {
                     for (i in it.indices) {
                         rememberList.add(
                             ProductInfos(
-                                it[i].id, it[i].name, it[i].thumbnail, it[i].imgPath,
+                                it[i].id, it[i].title, it[i].thumbnail, it[i].imgPath,
                                 it[i].subject, it[i].price, it[i].rate, it[i].time, it[i].check
                             )
                         )
@@ -70,7 +70,7 @@ class RoomsViewModel(application: Application) : AndroidViewModel(application) {
         val insert = Observable.just(
             RoomsRememberEntity(
                 id = item.id,
-                name = item.name,
+                title = item.title,
                 thumbnail = item.thumbnail,
                 imgPath = item.imgUrl,
                 subject = item.subject,
