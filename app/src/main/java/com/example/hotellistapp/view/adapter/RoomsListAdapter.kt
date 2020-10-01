@@ -125,7 +125,7 @@ class RoomsListAdapter (
         itemView.btn_remember_on.visibility = View.GONE
     }
 }
-@BindingAdapter("ImageUrl")
+@BindingAdapter("imageUrl")
 fun loadImage(imageView : ImageView, url : String) {
     Glide.with(imageView.context).load(url).into(imageView)
 }

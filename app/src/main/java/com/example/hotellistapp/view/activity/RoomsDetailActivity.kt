@@ -2,23 +2,30 @@ package com.example.hotellistapp.view.activity
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
+import com.example.hotellistapp.databinding.ActivityRoomsDetailActivityBinding
 import com.example.hotellistapp.model.ProductInfos
 import com.example.hotellistapp.util.setOnSingleClickListener
 import com.example.hotellistapp.viewModel.RoomsViewModel
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_rooms_detail_activity.*
 
-class RoomsDetailActivity : BaseActivity() {
+class RoomsDetailActivity : AppCompatActivity() {
     private lateinit var item : ProductInfos
     private val viewModel : RoomsViewModel by viewModels()
+    private lateinit var binding : ActivityRoomsDetailActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_rooms_detail_activity)
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_rooms_detail_activity)
     }
 
     override fun onResume() {
@@ -26,17 +33,11 @@ class RoomsDetailActivity : BaseActivity() {
         init()
     }
     private fun init() {
-        main_tablayout.visibility = View.GONE
-
         if(intent.hasExtra("item")) {
             item = intent.getSerializableExtra("item") as ProductInfos
-
-            title_text.text = item.title
-            Glide.with(applicationContext).load(item.imgUrl).into(roomsImg)
-            explain_text.text = item.subject
-            price.text = "${item.price}원"
-            rank_text.text = item.rate.toString()
+            binding.detailInfo = item
         }
+
         btn_remember_off.setOnSingleClickListener {
             btn_remember_off.visibility = View.GONE
             btn_remember_on.visibility = View.VISIBLE
@@ -65,4 +66,8 @@ class RoomsDetailActivity : BaseActivity() {
             })
         }
     }
+}
+@BindingAdapter("detailImageUrl")
+fun loadImage(imageView : ImageView, url : String) {
+    Glide.with(imageView.context).load(url).into(imageView)
 }
