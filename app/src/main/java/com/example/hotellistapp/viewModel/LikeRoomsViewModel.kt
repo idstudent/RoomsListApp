@@ -3,6 +3,7 @@ package com.example.hotellistapp.viewModel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.hotellistapp.model.db.DBManager
 import com.example.hotellistapp.model.ProductInfos
@@ -15,7 +16,7 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
     private var listItems = ArrayList<ProductInfos>()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val dbManager = DBManager.getInstance(application)
-    val selectLiveData = MutableLiveData<ArrayList<ProductInfos>>()
+    private val selectLiveData = MutableLiveData<ArrayList<ProductInfos>>()
 
     fun latelySelect() {
         listItems.clear()
@@ -101,5 +102,8 @@ class LikeRoomsViewModel(application: Application) : AndroidViewModel(applicatio
             1->rateDESCSelect()
             2->rateASCSelect()
         }
+    }
+    fun getSelectLiveData() : LiveData<ArrayList<ProductInfos>> {
+        return selectLiveData
     }
 }

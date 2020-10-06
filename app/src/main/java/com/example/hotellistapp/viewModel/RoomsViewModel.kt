@@ -2,6 +2,7 @@ package com.example.hotellistapp.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.hotellistapp.model.api.ApiManager
@@ -19,14 +20,14 @@ import kotlin.collections.ArrayList
 
 class RoomsViewModel(application: Application) : AndroidViewModel(application) {
 
-    val itemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
-    val rememberItemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
-    val detailRememberItemLiveData = MutableLiveData<ArrayList<Int>>()
+    private val itemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
+    private val rememberItemLiveData = MutableLiveData<ArrayList<ProductInfos>>()
+    private val detailRememberItemLiveData = MutableLiveData<ArrayList<Int>>()
     private val itemList = ArrayList<ProductInfos>()
     private val rememberList = ArrayList<ProductInfos>()
     private val detailRememberList = ArrayList<Int>()
-    val loadingLiveData = MutableLiveData<Boolean>()
-    var totalCount : Int = 0
+    private val loadingLiveData = MutableLiveData<Boolean>()
+    private var totalCount : Int = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val dbManager = DBManager.getInstance(application)
 
@@ -133,5 +134,20 @@ class RoomsViewModel(application: Application) : AndroidViewModel(application) {
 
             loadingLiveData.value = false
         }
+    }
+    fun getItemLiveData() :LiveData<ArrayList<ProductInfos>>{
+        return itemLiveData
+    }
+    fun getRememberItemLiveData() :LiveData<ArrayList<ProductInfos>>{
+        return rememberItemLiveData
+    }
+    fun getDetailRememberItemLiveData() :LiveData<ArrayList<Int>>{
+        return detailRememberItemLiveData
+    }
+    fun getLoadingLiveData() :LiveData<Boolean>{
+        return loadingLiveData
+    }
+    fun getTotalCount() : Int {
+        return totalCount
     }
 }

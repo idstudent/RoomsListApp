@@ -48,7 +48,7 @@ class LikeRoomsFragment : BaseFragment() {
         spinner.adapter = sortSpinner
 
         viewModel.apply {
-            viewModel.selectLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.getSelectLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.updateItems(it)
             })
             this.latelySelect()

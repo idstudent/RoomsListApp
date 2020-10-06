@@ -56,7 +56,7 @@ class RoomsDetailActivity : AppCompatActivity() {
 
         viewModel.apply {
             viewModel.detailActivityLikeCheck()
-            viewModel.detailRememberItemLiveData.observe(this@RoomsDetailActivity, androidx.lifecycle.Observer {
+            viewModel.getDetailRememberItemLiveData().observe(this@RoomsDetailActivity, androidx.lifecycle.Observer {
                 for(i in it.indices) {
                     if (item.id == it[i]){
                         btn_remember_off.visibility = View.GONE

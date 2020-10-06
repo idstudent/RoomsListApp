@@ -59,21 +59,21 @@ class RoomsFragment : BaseFragment() {
             // 프래그먼트 생명주기때문에 this가 아닌 viewLifecycleOwner을 써줘야된다고함
             // this쓰면 호출2번해서 리스트가 2개나옴
             // http://pluu.github.io/blog/android/2020/01/25/android-fragment-lifecycle/
-            viewModel.rememberItemLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.getRememberItemLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.rememberItems(it)
             })
-            viewModel.itemLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.getItemLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.updateItems(it)
 
             })
-            loadingLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            getLoadingLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 progressBar?.visibility = if(it) View.VISIBLE else View.GONE
 
                 roomsRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
 
-                        if(!roomsRecyclerView.canScrollVertically(1) && pageCheck < viewModel.totalCount) {
+                        if(!roomsRecyclerView.canScrollVertically(1) && pageCheck < viewModel.getTotalCount()) {
                             progressBar?.visibility = View.VISIBLE
                             // 엄청 빠르게 스크롤시 연달아 호출해서 리스트 1개가 안나옴, 그래서 call로 체크해서 이를 방지
                             if(!call) {
