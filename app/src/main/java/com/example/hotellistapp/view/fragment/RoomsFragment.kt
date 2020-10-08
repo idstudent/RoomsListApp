@@ -59,10 +59,10 @@ class RoomsFragment : BaseFragment() {
             // 프래그먼트 생명주기때문에 this가 아닌 viewLifecycleOwner을 써줘야된다고함
             // this쓰면 호출2번해서 리스트가 2개나옴
             // http://pluu.github.io/blog/android/2020/01/25/android-fragment-lifecycle/
-            viewModel.getRememberItemLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            getRememberItemLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.rememberItems(it)
             })
-            viewModel.getItemLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            getItemLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 roomsListAdapter.updateItems(it)
 
             })
