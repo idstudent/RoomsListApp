@@ -15,13 +15,14 @@ import com.bumptech.glide.Glide
 import com.example.hotellistapp.R
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
+import com.example.hotellistapp.model.TProductInfos
 import com.example.hotellistapp.ui.activity.RoomsDetailActivity
 import com.example.hotellistapp.util.setOnSingleClickListener
 import kotlinx.android.synthetic.main.item_rooms.view.*
 
 class RoomsListAdapter (
     private val context : Context,
-    private val listItems : List<ProductInfos>,
+    private val listItems : List<TProductInfos>,
     private var rememberList : List<ProductInfos>,
     private var type : String
 ) : RecyclerView.Adapter<RoomsListAdapter.ItemViewHolder>() {
