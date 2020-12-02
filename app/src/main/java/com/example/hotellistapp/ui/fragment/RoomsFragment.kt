@@ -106,6 +106,8 @@ class RoomsFragment : BaseFragment() {
                         val total = data.get("totalCount").asInt
                         val product = data["product"].asJsonArray
 
+
+                        // gson 성공부분 
                         for(i in product) {
                             var item = gson.fromJson(i, TProductInfos::class.java)
                             testList.add(item)
@@ -119,11 +121,6 @@ class RoomsFragment : BaseFragment() {
                             totalPage = total/20 + 1
                         }
 
-                        // 이방식도되는데 description( jsonobject안에 또 jsonobject있음) 이게 다 null로 찍혀서 쿼리안됨
-//                        for(item in product) {
-//                            val test = Gson().fromJson(item, ProductInfos::class.java)
-//                            listItems.add(test)
-//                        }
                         product.forEach {
                             val productObject = it.asJsonObject
                             val descriptionObject = productObject["description"].asJsonObject
