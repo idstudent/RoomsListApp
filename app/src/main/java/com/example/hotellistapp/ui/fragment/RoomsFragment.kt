@@ -17,6 +17,8 @@ import com.example.hotellistapp.api.ApiManager
 import com.example.hotellistapp.db.entity.RoomsRememberEntity
 import com.example.hotellistapp.listener.ItemClickListener
 import com.example.hotellistapp.model.ProductInfos
+import com.example.hotellistapp.model.TProductInfos
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,6 +34,7 @@ class RoomsFragment : BaseFragment() {
     private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var roomsListAdapter: RoomsListAdapter
     private var listItems = ArrayList<ProductInfos>()
+    private var testList = ArrayList<TProductInfos>()
     private var rememberList = ArrayList<ProductInfos>()
     private var pageCheck = 1
     private var totalPage = 0
@@ -55,7 +58,7 @@ class RoomsFragment : BaseFragment() {
         val progressBar = view?.findViewById<ProgressBar>(R.id.progress)
         progressBar?.visibility = View.VISIBLE
 
-        roomsListAdapter = RoomsListAdapter(requireActivity(), listItems, rememberList, "list")
+        roomsListAdapter = RoomsListAdapter(requireActivity(), testList, rememberList, "list")
         roomsListAdapter.rememberListener(rememberListener)
 
         val roomsRecyclerView = view?.findViewById<RecyclerView>(R.id.rooms_recycler_view)
@@ -95,21 +98,29 @@ class RoomsFragment : BaseFragment() {
             override fun onResponse(call: retrofit2.Call<JsonElement>, response: Response<JsonElement>) {
                 if(response.isSuccessful) {
                     response.body()?.let {
+                        var gson = Gson()
+
                         val body = it.asJsonObject
+                        Log.e("tag", "body "+ body)
                         val data = body.getAsJsonObject("data")
                         val total = data.get("totalCount").asInt
                         val product = data["product"].asJsonArray
+
+
+                        // gson 성공부분 
+                        for(i in product) {
+                            var item = gson.fromJson(i, TProductInfos::class.java)
+                            testList.add(item)
+                        }
+                        for (i in testList.indices) {
+                            Log.e("tag", "testList "+ listOf(testList[i].toString()))
+                        }
                         if (total % 20 == 0) {
                             totalPage = total/20
                         }else {
                             totalPage = total/20 + 1
                         }
 
-                        // 이방식도되는데 description( jsonobject안에 또 jsonobject있음) 이게 다 null로 찍혀서 쿼리안됨
-//                        for(item in product) {
-//                            val test = Gson().fromJson(item, ProductInfos::class.java)
-//                            listItems.add(test)
-//                        }
                         product.forEach {
                             val productObject = it.asJsonObject
                             val descriptionObject = productObject["description"].asJsonObject
@@ -132,7 +143,7 @@ class RoomsFragment : BaseFragment() {
         })
     }
     private val rememberListener = object : ItemClickListener {
-        override fun onClick(item: ProductInfos) {
+        override fun onClick(item: TProductInfos) {
             if (item.check) {
                 insertList(item)
 
@@ -142,7 +153,7 @@ class RoomsFragment : BaseFragment() {
         }
     }
 
-    private fun insertList(item: ProductInfos) {
+    private fun insertList(item: TProductInfos) {
         val time = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         var curTime = dateFormat.format(Date(time))
@@ -151,9 +162,9 @@ class RoomsFragment : BaseFragment() {
                 id = item.id,
                 name = item.name,
                 thumbnail = item.thumbnail,
-                imgPath = item.imgUrl,
-                subject = item.subject,
-                price = item.price,
+                imgPath = item.descriptionList.imagePath,
+                subject = item.descriptionList.subject,
+                price = item.descriptionList.price,
                 rate = item.rate,
                 time = curTime,
                 check = item.check
@@ -171,7 +182,7 @@ class RoomsFragment : BaseFragment() {
         compositeDisposable.add(insert)
     }
 
-    private fun deleteList(item: ProductInfos) {
+    private fun deleteList(item: TProductInfos) {
         compositeDisposable.add(
             Observable.fromCallable {
                 dbManager.roomsRememberDAO().deleteItem(item.id)
